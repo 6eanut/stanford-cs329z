@@ -27,3 +27,5 @@ npm run preview
 推送到 `main` 分支后，`.github/workflows/deploy.yml` 会构建并部署静态站点。首次使用时，在仓库 **Settings → Pages → Build and deployment → Source** 中选择 **GitHub Actions**。站点路径配置为 `https://6eanut.github.io/stanford-cs329z/`；如果迁移仓库，需同步修改 `astro.config.mjs` 的 `site` 和 `base`，以及搜索页的 `baseUrl`。
 
 课程内容基于原始 PDF 重新组织。图表和 PDF 均来自仓库中的课程幻灯片；请遵守原课程资料的使用条件。
+
+页眉的访问量使用 [Hits](https://hits.sh/) 统计本课程站所有页面的累计浏览次数（PV），从接入后开始计数，并非独立访客数。Star 按钮会打开 GitHub 仓库，访客可在 GitHub 登录后点 Star。

@@ -43,10 +43,20 @@ const { title, description } = Astro.props;
           <a href={sitePath('search/')}>搜索</a>
           <a href="https://web.stanford.edu/class/cs329z/" target="_blank" rel="noopener noreferrer">原课程 ↗</a>
         </nav>
-        <button class="theme-toggle" type="button" aria-label="切换明暗主题" title="切换明暗主题">
-          <span class="theme-icon-light" aria-hidden="true">☼</span>
-          <span class="theme-icon-dark" aria-hidden="true">☾</span>
-        </button>
+        <div class="header-actions">
+          <a class="visit-counter" href="https://hits.sh/6eanut.github.io/stanford-cs329z/" target="_blank" rel="noopener noreferrer" aria-label="查看本站访问量统计详情（在新窗口打开）" title="本站累计页面浏览次数，点击查看统计详情">
+            <span>访问量</span>
+            <img src="https://hits.sh/6eanut.github.io/stanford-cs329z.svg?label=PV&color=941f36&labelColor=202a29&style=flat-square" alt="" width="46" height="20" referrerpolicy="no-referrer" />
+          </a>
+          <a class="star-link" href="https://github.com/6eanut/stanford-cs329z" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 给仓库点 Star" title="在 GitHub 给仓库点 Star">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2.8 2.84 5.76 6.36.92-4.6 4.49 1.09 6.33L12 17.31l-5.69 2.99 1.09-6.33-4.6-4.49 6.36-.92L12 2.8Z" /></svg>
+            <span>Star</span>
+          </a>
+          <button class="theme-toggle" type="button" aria-label="切换明暗主题" title="切换明暗主题">
+            <span class="theme-icon-light" aria-hidden="true">☼</span>
+            <span class="theme-icon-dark" aria-hidden="true">☾</span>
+          </button>
+        </div>
       </div>
     </header>
     <main id="main"><slot /></main>
