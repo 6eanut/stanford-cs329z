@@ -1,13 +1,7 @@
-# Dependencies
 node_modules/
-
-# Astro build output
 dist/
 .astro/
-
-# Extracted intermediate artifacts (regenerable from slides/*.pdf)
 slides/_extracted/
-
-# OS / editor
+public/slides/original/
 .DS_Store
 *.log

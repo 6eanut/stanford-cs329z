@@ -1,0 +1,67 @@
+---
+import '../styles/global.css';
+import 'katex/dist/katex.min.css';
+import { sitePath } from '../lib/paths';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f5f2eb" />
+    <link rel="icon" href={sitePath('favicon.svg')} type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem('cs329z-theme');
+        document.documentElement.dataset.theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (_) {}
+    </script>
+    <title>{title} · CS 329Z 中文讲义</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳转到正文</a>
+    <header class="site-header">
+      <div class="header-inner wrap">
+        <a class="brand" href={sitePath()} aria-label="CS 329Z 中文讲义首页">
+          <span class="brand-mark">Z<span class="brand-dot">.</span></span>
+          <span class="brand-name">CS 329Z <small>中文讲义</small></span>
+        </a>
+        <nav class="header-nav" aria-label="主导航">
+          <a href={sitePath('#curriculum')}>课程目录</a>
+          <a href={sitePath('search/')}>搜索</a>
+          <a href="https://web.stanford.edu/class/cs329z/" target="_blank" rel="noopener noreferrer">原课程 ↗</a>
+        </nav>
+        <button class="theme-toggle" type="button" aria-label="切换明暗主题" title="切换明暗主题">
+          <span class="theme-icon-light" aria-hidden="true">☼</span>
+          <span class="theme-icon-dark" aria-hidden="true">☾</span>
+        </button>
+      </div>
+    </header>
+    <main id="main"><slot /></main>
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <div><strong>CS 329Z 中文讲义</strong><p>基于 Stanford CS 329Z 幻灯片整理的非官方中文学习笔记。</p></div>
+        <div class="footer-links"><a href={sitePath('#curriculum')}>所有课程</a><a href="https://github.com/6eanut/stanford-cs329z" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div>
+      </div>
+    </footer>
+    <script>
+      document.querySelector<HTMLButtonElement>('.theme-toggle')?.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        try { localStorage.setItem('cs329z-theme', next); } catch (_) {}
+      });
+    </script>
+  </body>
+</html>

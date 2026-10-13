@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { sitePath } from '../lib/paths';
+---
+
+<BaseLayout title="搜索课程" description="搜索 CS 329Z 六讲中文笔记中的概念、方法和案例。">
+  <div class="search-page wrap"><p class="eyebrow">EXPLORE / SEARCH</p><h1>搜索课程笔记。</h1><p>查找 RAG、工具调用、ReAct、上下文管理等概念。搜索结果可直达对应章节。</p><div id="search"></div><p class="search-footnote">搜索索引在构建时生成，所有查询都在浏览器内完成。</p></div>
+  <link rel="stylesheet" href={sitePath('pagefind/pagefind-ui.css')} />
+  <script is:inline src={sitePath('pagefind/pagefind-ui.js')}></script>
+  <script is:inline define:vars={{ bundlePath: sitePath('pagefind/'), baseUrl: sitePath() }}>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.PagefindUI) new window.PagefindUI({ element: '#search', showSubResults: true, bundlePath, baseUrl, translations: { placeholder: '输入中文或英文关键词…' } });
+    });
+  </script>
+</BaseLayout>

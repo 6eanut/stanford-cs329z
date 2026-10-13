@@ -1,0 +1,58 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { sitePath } from '../lib/paths';
+
+const lectures = (await getCollection('lectures')).sort((a, b) => a.data.lecture - b.data.lecture);
+---
+
+<BaseLayout title="把智能体系统，学明白" description="斯坦福 CS 329Z: Engineering AI Agents 六讲中文课程笔记，系统学习大模型、RAG、工具调用、框架与智能体设计模式。">
+  <section class="hero wrap">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="eyebrow-rule"></span> STANFORD CS 329Z · 中文学习站</p>
+      <h1>把智能体系统，<br /><em>学明白。</em></h1>
+      <p class="hero-lede">从大模型的工作原理，到检索、工具调用与系统编排。沿着六份原始讲义，建立一条清晰的 AI Agent 学习路径。</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href={sitePath(`lectures/${lectures[0]?.id}/`)}>开始第一讲 <span aria-hidden="true">↗</span></a>
+        <a class="text-link" href="#curriculum">浏览课程 <span aria-hidden="true">↓</span></a>
+      </div>
+      <p class="hero-source">基于 6 份英文幻灯片整理 · 中文讲解与原始 PDF 对照阅读</p>
+    </div>
+    <div class="hero-visual" aria-label="智能体观察、思考、行动的循环示意图" role="img">
+      <span class="visual-index">FIG. 01 / AGENT LOOP</span>
+      <div class="loop-orbit orbit-one"></div><div class="loop-orbit orbit-two"></div>
+      <div class="loop-core"><span>AGENT</span><strong>观察<br />思考<br />行动</strong></div>
+      <div class="loop-node node-input"><small>01 / INPUT</small><strong>环境与任务</strong></div>
+      <div class="loop-node node-model"><small>02 / REASON</small><strong>模型与记忆</strong></div>
+      <div class="loop-node node-tool"><small>03 / ACT</small><strong>工具与反馈</strong></div>
+      <span class="visual-note">A SYSTEM, NOT A SINGLE PROMPT.</span>
+    </div>
+  </section>
+
+  <section class="intro-band">
+    <div class="wrap intro-grid">
+      <div class="section-label">关于这门课 <span>01 / 02</span></div>
+      <div>
+        <h2>从模型能力，走向可运行的系统。</h2>
+        <p>CS 329Z 聚焦 AI Agent 的工程实践：模型如何理解上下文、何时检索知识、怎样调用工具，以及如何把这些能力组织成稳定可靠的工作流。这里把幻灯片中的概念、方法和案例写成适合自学的中文笔记。</p>
+      </div>
+      <div class="intro-aside"><span>学习方式</span><p>先读中文讲解建立脉络，再用每讲附带的英文原版 PDF 核对图表与细节。</p></div>
+    </div>
+  </section>
+
+  <section class="curriculum wrap" id="curriculum">
+    <div class="curriculum-header"><div><p class="eyebrow">THE COURSE / 课程路线</p><h2>六讲，逐步搭建知识框架。</h2></div><p>按顺序学习，也可以从正在解决的问题切入。</p></div>
+    <div class="lecture-list">
+      {lectures.map((lecture) => (
+        <a class="lecture-row" href={sitePath(`lectures/${lecture.id}/`)}>
+          <span class="lecture-number">{String(lecture.data.lecture).padStart(2, '0')}</span>
+          <span class="lecture-info"><strong>{lecture.data.title}</strong><small>{lecture.data.topic}</small><span>{lecture.data.summary}</span></span>
+          <span class="lecture-pages">{lecture.data.slides} 页讲义</span>
+          <span class="lecture-arrow" aria-hidden="true">↗</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="closing-band"><div class="wrap closing-inner"><div><p class="eyebrow">READY TO START?</p><h2>从第一讲开始，把概念连成系统。</h2></div><a class="button button-light" href={sitePath(`lectures/${lectures[0]?.id}/`)}>进入课程 <span aria-hidden="true">↗</span></a></div></section>
+</BaseLayout>

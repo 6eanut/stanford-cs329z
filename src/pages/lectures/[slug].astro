@@ -1,0 +1,81 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { sitePath } from '../../lib/paths';
+import { figures } from '../../data/figures';
+
+export async function getStaticPaths() {
+  const lectures = (await getCollection('lectures')).sort((a, b) => a.data.lecture - b.data.lecture);
+  return lectures.map((lecture, index) => ({ params: { slug: lecture.id }, props: { lecture, lectures, index } }));
+}
+
+const { lecture, lectures, index } = Astro.props;
+const { Content, headings } = await render(lecture);
+const number = String(lecture.data.lecture).padStart(2, '0');
+const pdfUrl = sitePath(`slides/original/lecture${number}.pdf`);
+const lectureFigures = figures[lecture.data.lecture] ?? [];
+---
+
+<BaseLayout title={lecture.data.title} description={lecture.data.summary}>
+  <div class="lesson-shell wrap">
+    <aside class="lesson-sidebar" aria-label="课程导航">
+      <a class="back-link" href={sitePath('#curriculum')}>← 返回课程目录</a>
+      <details class="mobile-lesson-nav"><summary>切换课程 <span>第 {number} 讲 ▾</span></summary><nav>{lectures.map((item) => <a class:list={[{ active: item.id === lecture.id }]} href={sitePath(`lectures/${item.id}/`)}><span>{String(item.data.lecture).padStart(2, '0')}</span>{item.data.title.replace(/^第\s*\d+\s*讲[·：:]?\s*/, '')}</a>)}</nav></details>
+      <p class="sidebar-heading">课程 / LECTURES</p>
+      <nav class="lesson-nav">
+        {lectures.map((item) => <a class:list={[{ active: item.id === lecture.id }]} href={sitePath(`lectures/${item.id}/`)}><span>{String(item.data.lecture).padStart(2, '0')}</span>{item.data.title.replace(/^第\s*\d+\s*讲[·：:]?\s*/, '')}</a>)}
+      </nav>
+      <div class="sidebar-bottom"><span>CS 329Z</span><p>Engineering AI Agents</p></div>
+    </aside>
+
+    <div class="lesson-main">
+      <div class="lesson-topline"><span>LECTURE {number} / 06</span><span>{lecture.data.slides} 页英文讲义</span></div>
+      <header class="lesson-header">
+        <p class="eyebrow">CS 329Z · 第 {lecture.data.lecture} 讲</p>
+        <h1>{lecture.data.title.replace(/^第\s*\d+\s*讲[·：:]?\s*/, '')}</h1>
+        <p class="lesson-english">{lecture.data.topic}</p>
+        <p class="lesson-summary">{lecture.data.summary}</p>
+        <div class="lesson-actions"><a class="button button-primary" href={pdfUrl} download>下载原始幻灯片 <span aria-hidden="true">↓</span></a><a class="text-link" href={pdfUrl} target="_blank" rel="noopener noreferrer">浏览 PDF ↗</a></div>
+      </header>
+
+      <details class="pdf-preview">
+        <summary>在本页展开完整英文讲义 <span>{lecture.data.slides} 页 ↘</span></summary>
+        <div class="pdf-preview-content"><iframe data-src={pdfUrl} title={`${lecture.data.topic} 原始英文幻灯片`} loading="lazy"></iframe><p>如果浏览器无法显示内嵌 PDF，可<a href={pdfUrl} target="_blank" rel="noopener noreferrer">在新标签页打开 ↗</a>。</p></div>
+      </details>
+
+      {lectureFigures.length > 0 && <section class="figure-section" aria-label="原始讲义精选图表"><div class="figure-heading"><span>讲义图解 / FROM THE SLIDES</span><small>点击图片查看原尺寸</small></div><div class="figure-grid">{lectureFigures.map((figure) => <figure><a href={sitePath(`slides/figures/lecture${number}/page-${String(figure.page).padStart(3, '0')}.png`)} target="_blank" rel="noopener noreferrer"><img src={sitePath(`slides/figures/lecture${number}/page-${String(figure.page).padStart(3, '0')}.png`)} alt={figure.alt} loading="lazy" /></a><figcaption><span>SLIDE {figure.page}</span>{figure.caption}</figcaption></figure>)}</div></section>}
+
+      <article class="prose" data-pagefind-body><Content /></article>
+
+      <div class="source-note"><span>资料说明</span><p>本站内容是基于课程幻灯片整理的中文讲解，并非逐字翻译或斯坦福官方出版物。遇到公式、图表和实验数字时，建议同时查阅 <a href={pdfUrl} target="_blank" rel="noopener noreferrer">英文原版幻灯片 ↗</a>。</p></div>
+
+      <nav class="lesson-pager" aria-label="上一讲和下一讲">
+        {index > 0 ? <a href={sitePath(`lectures/${lectures[index - 1].id}/`)}><small>← 上一讲</small><strong>{lectures[index - 1].data.title}</strong></a> : <span></span>}
+        {index < lectures.length - 1 ? <a href={sitePath(`lectures/${lectures[index + 1].id}/`)}><small>下一讲 →</small><strong>{lectures[index + 1].data.title}</strong></a> : <a href={sitePath('#curriculum')}><small>学习完成 →</small><strong>返回课程目录</strong></a>}
+      </nav>
+    </div>
+
+    <aside class="toc" aria-label="本页目录"><p>本讲目录 <span>ON THIS PAGE</span></p><nav>{headings.filter((heading) => heading.depth === 2).map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}</nav><a class="toc-top" href="#main">↑ 回到顶部</a></aside>
+  </div>
+  <script>
+    document.querySelector<HTMLDetailsElement>('.pdf-preview')?.addEventListener('toggle', (event) => {
+      const details = event.currentTarget as HTMLDetailsElement;
+      const frame = details.querySelector<HTMLIFrameElement>('iframe[data-src]');
+      if (details.open && frame?.dataset.src) {
+        frame.src = frame.dataset.src;
+        delete frame.dataset.src;
+      }
+    });
+    const tocLinks = [...document.querySelectorAll<HTMLAnchorElement>('.toc nav a')];
+    const sections = tocLinks.map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1)))).filter((section): section is HTMLElement => section !== null);
+    if (sections.length) {
+      const observer = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          tocLinks.forEach((link) => link.classList.toggle('current', link.hash === `#${entry.target.id}`));
+        }
+      }, { rootMargin: '-15% 0px -70% 0px' });
+      sections.forEach((section) => observer.observe(section));
+    }
+  </script>
+</BaseLayout>
